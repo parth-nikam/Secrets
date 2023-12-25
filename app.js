@@ -98,16 +98,16 @@ app.get("/register", function(req, res){
     res.render("register");
 });
 
-app.get("/secrets", function(req, res){
-    User.find({"secret": {$ne: null}}, function(err, foundUsers){
-        if (err){
-            console.log(err);
-        } else {
-            if (foundUsers) {
-                res.render("secrets", {usersWithSecrets: foundUsers});
-            }
+app.get("/secrets", async function(req, res){
+    try {
+        const foundUsers = await User.find({"secret": {$ne: null}});
+        if (foundUsers) {
+            res.render("secrets", {usersWithSecrets: foundUsers});
         }
-    });
+    } catch (err) {
+        console.log(err);
+
+    }
 });
 
 app.get("/submit", function(req, res){
@@ -118,29 +118,34 @@ app.get("/submit", function(req, res){
     }
 });
 
-app.post("/submit", function(req, res){
+app.post("/submit", async function(req, res){
+
+    if (!req.isAuthenticated()) {
+        res.redirect("/login");
+    }
+
     const submittedSecret = req.body.secret;
-
-//Once the user is authenticated and their session gets saved, their user details are saved to req.user.
-    // console.log(req.user.id);
-
-    User.findById(req.user.id, function(err, foundUser){
-        if (err) {
-            console.log(err);
-        } else {
-            if (foundUser) {
-                foundUser.secret = submittedSecret;
-                foundUser.save(function(){
-                    res.redirect("/secrets");
-                });
-            }
+    try {
+        const foundUser = await User.findById(req.user.id);
+        if (foundUser) {
+            foundUser.secret = submittedSecret;
+            await foundUser.save();
+            res.redirect("/secrets");
         }
-    });
+    } catch (err) {
+        console.log(err);
+
+    }
 });
 
 app.get("/logout", function(req, res){
-    req.logout();
-    res.redirect("/");
+    req.logout(function (err) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.redirect("/");
+        }
+    });
 });
 
 app.post("/register", function(req, res){
