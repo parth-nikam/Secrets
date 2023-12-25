@@ -40,7 +40,7 @@ Follow these steps to run the "Secrets" application on your local machine:
 
 1. **Clone the repository:**
     ```bash
-    git clone <repository_url>
+    git clone https://github.com/parth-nikam/Secrets/
     cd secrets
     ```
 
@@ -72,7 +72,7 @@ We welcome contributions, feedback, and suggestions regarding security enhanceme
 
 ## License
 
-This project is licensed under the [License Name or URL] License - see the LICENSE.md file for details.
+This project is licensed under the License - see the LICENSE.md file for details.
 
 ---
 
